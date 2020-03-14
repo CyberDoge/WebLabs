@@ -139,14 +139,3 @@ gradle-app.setting
 
 ### Gradle Patch ###
 **/build/
-
-# End of https://www.gitignore.io/api/java,gradle,database,jetbrains+all
-Будет удалено .gitignore
-Будет удалено .gradle/
-Будет удалено build.gradle
-Будет удалено gradle/
-Будет удалено gradlew
-Будет удалено gradlew.bat
-Будет удалено settings.gradle
-Будет удалено src/main/resources/
-Будет удалено src/test/
