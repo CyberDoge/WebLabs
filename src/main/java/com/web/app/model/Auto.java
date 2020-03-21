@@ -2,14 +2,17 @@ package com.web.app.model;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 public class Auto implements Serializable {
+    private UUID id;
     private String model;
     private String producer;
     private int count;
     private float price;
 
-    public Auto(String model, String producer, int count, float price) {
+    public Auto(UUID id, String model, String producer, int count, float price) {
+        this.id = id;
         this.model = model;
         this.producer = producer;
         this.count = count;
@@ -22,17 +25,26 @@ public class Auto implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Auto)) return false;
         Auto auto = (Auto) o;
         return count == auto.count &&
                 Float.compare(auto.price, price) == 0 &&
+                Objects.equals(id, auto.id) &&
                 Objects.equals(model, auto.model) &&
                 Objects.equals(producer, auto.producer);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(model, producer, count, price);
+        return Objects.hash(id, model, producer, count, price);
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public String getModel() {

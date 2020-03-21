@@ -26,4 +26,5 @@ dependencies {
             version: '2.10.2'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.2'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.10.2'
+    compile 'com.github.cloudyrock.mongock:mongock-core:3.2.4'
 }

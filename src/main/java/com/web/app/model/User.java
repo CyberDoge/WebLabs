@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class User {
-    private int id;
+    private UUID id;
     private String name;
     private String login;
     private char[] password;
@@ -15,7 +15,7 @@ public class User {
     }
 
     public User(UUID id, String name, String login, char[] password) {
-        this.id = 1;
+        this.id = id;
         this.name = name;
         this.login = login;
         this.password = password;
@@ -25,11 +25,11 @@ public class User {
         this.autoRentalList.add(autoRental);
     }
 
-    public Optional<Auto> getProduct(Auto auto) {
+    public Optional<Auto> getProduct(UUID id) {
         return this.autoRentalList.stream()
                 .flatMap(
                         autoRental -> autoRental.getAutos().stream()
-                ).filter(auto::equals).findFirst();
+                ).filter(auto -> auto.getId().equals(id)).findFirst();
     }
 
     public void deleteAutoRentalByIndex(int index) {
@@ -51,7 +51,7 @@ public class User {
     }
 
     public void setId(UUID id) {
-        this.id = 0;
+        this.id = id;
     }
 
     public String getName() {
