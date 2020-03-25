@@ -1,49 +1,45 @@
 package com.web.app.model;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.web.app.dao.UserDao;
+
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public class User {
+
+    @JsonProperty("_id")
     private UUID id;
     private String name;
     private String login;
-    private char[] password;
-    private List<AutoRental> autoRentalList;
+    private String passwordHash;
+    private List<UUID> autoRentalIds;
+    @JsonIgnore
+    private UserDao userDao;
 
     public User() {
     }
 
-    public User(UUID id, String name, String login, char[] password) {
+    public User(UUID id, String name, String login, String password, List<UUID> autoRentalIds) {
         this.id = id;
         this.name = name;
         this.login = login;
-        this.password = password;
+        this.passwordHash = this.hashPassword(password.toCharArray());
+        this.autoRentalIds = autoRentalIds;
     }
 
-    public void addAutoRental(AutoRental autoRental) {
-        this.autoRentalList.add(autoRental);
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
     }
 
-    public Optional<Auto> getProduct(UUID id) {
-        return this.autoRentalList.stream()
-                .flatMap(
-                        autoRental -> autoRental.getAutos().stream()
-                ).filter(auto -> auto.getId().equals(id)).findFirst();
+    public void addAutoRentalId(UUID id) {
+        this.autoRentalIds.add(id);
     }
 
-    public void deleteAutoRentalByIndex(int index) {
-        this.autoRentalList.remove(index);
-    }
-
-    public boolean deleteAutoRentalById(UUID pointOfRental) {
-        return this.autoRentalList.removeIf(
-                autoRental -> autoRental.getPointOfRental().equals(pointOfRental)
-        );
-    }
-
-    public int getAutoRentalSize() {
-        return this.autoRentalList.size();
+    public void deleteAutoRentalIndex(int index) {
+        this.autoRentalIds.remove(index);
     }
 
     public UUID getId() {
@@ -70,12 +66,24 @@ public class User {
         this.login = login;
     }
 
-    public char[] getPassword() {
-        return password;
+    public List<UUID> getAutoRentalIds() {
+        return autoRentalIds;
     }
 
-    public void setPassword(char[] password) {
-        this.password = password;
+    public void setAutoRentalIds(List<UUID> autoRentalIds) {
+        this.autoRentalIds = autoRentalIds;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public String hashPassword(char[] password) {
+        return BCrypt.withDefaults().hashToString(16, password);
     }
 
     @Override

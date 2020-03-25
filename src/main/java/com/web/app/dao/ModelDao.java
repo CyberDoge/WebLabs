@@ -2,16 +2,22 @@ package com.web.app.dao;
 
 import com.mongodb.MongoClient;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ModelDao<T> {
-    T getModelById(UUID id);
 
-    void addModel(T model);
+    List<T> getAll();
 
-    T deleteModelById(UUID id);
+    Optional<T> getModelById(UUID id);
 
-    int getModelsCount(Class<T> modelClass);
+    void insertModel(T model);
+
+    void deleteModelById(UUID id);
+
+    long getModelsCount();
 
     void setMongoClient(MongoClient mongoClient);
+
 }
