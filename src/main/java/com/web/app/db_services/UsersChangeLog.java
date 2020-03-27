@@ -25,6 +25,27 @@ public class UsersChangeLog {
         );
     }
 
+    @ChangeSet(id = "setUsersMoreThan5Users", order = "002", author = "me")
+    public void changeSet2(MongoDatabase mongoDatabase) {
+        final ObjectMapper mapper = new ObjectMapper();
+        for (int i = 0; i < 6; i++) {
+            User user = new User(
+                    UUID.randomUUID(),
+                    "John Doe" + i,
+                    "foo" + i,
+                    "password" + i,
+                    List.of(
+                            UUID.randomUUID(),
+                            UUID.randomUUID(),
+                            UUID.randomUUID()
+                    )
+            );
+            mongoDatabase.getCollection(USERS_COLLECTION_NAME).insertOne(
+                    new Document(mapper.convertValue(user, Map.class))
+            );
+        }
+    }
+
     private Document createMongoDocument(User user) {
         return new Document()
                 .append("_id", user.getId())

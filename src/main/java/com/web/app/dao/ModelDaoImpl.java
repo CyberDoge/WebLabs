@@ -7,24 +7,27 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.result.DeleteResult;
+import com.web.app.model.Model;
 import org.bson.Document;
 
-import java.lang.reflect.Type;
 import java.util.*;
 
-public abstract class ModelDaoImpl<T> implements ModelDao<T> {
+public abstract class ModelDaoImpl<T extends Model> implements ModelDao<T> {
+    protected TypeReference<T> typeReference;
     private MongoClient mongoClient;
-    private TypeReference<T> typeReference = new TypeReference<>() {
-        @Override
-        public Type getType() {
-            return super.getType();
-        }
 
-        @Override
-        public int compareTo(TypeReference<T> o) {
-            return super.compareTo(o);
-        }
-    };
+    public ModelDaoImpl(MongoClient mongoClient) {
+        this.mongoClient = mongoClient;
+        this.typeReference = this.createTypeReference();
+    }
+
+    @Override
+    public void update(UUID id, Model model) {
+        final ObjectMapper mapper = new ObjectMapper();
+        this.getCollection().updateOne(new BasicDBObject("_id", id), new Document(
+                mapper.convertValue(model, Map.class)
+        ));
+    }
 
     @Override
     public List<T> getAll() {
@@ -41,7 +44,7 @@ public abstract class ModelDaoImpl<T> implements ModelDao<T> {
     @Override
     public Optional<T> getModelById(UUID id) {
         final ObjectMapper mapper = new ObjectMapper();
-        MongoCursor<Document> cursor = this.getCollection().find(new BasicDBObject("_id", id)).cursor();
+        MongoCursor<Document> cursor = this.getCollection().find(new BasicDBObject("_id", id.toString())).cursor();
         if (cursor.hasNext()) {
             return Optional.of(mapper.convertValue(cursor.next(), typeReference));
         }
@@ -49,7 +52,7 @@ public abstract class ModelDaoImpl<T> implements ModelDao<T> {
     }
 
     @Override
-    public void insertModel(T model) {
+    public void insertModel(Model model) {
         final ObjectMapper mapper = new ObjectMapper();
         getCollection().insertOne(new Document(
                 mapper.convertValue(model, Map.class)
@@ -58,8 +61,8 @@ public abstract class ModelDaoImpl<T> implements ModelDao<T> {
 
     @Override
     public void deleteModelById(UUID id) {
-        DeleteResult id1 = getCollection().deleteOne(new BasicDBObject("_id", id));
-        System.out.println(id1);
+        DeleteResult result = getCollection().deleteOne(new BasicDBObject("_id", id));
+        System.out.println(result);
     }
 
     @Override
@@ -77,4 +80,6 @@ public abstract class ModelDaoImpl<T> implements ModelDao<T> {
     }
 
     protected abstract MongoCollection<Document> getCollection();
+
+    protected abstract TypeReference<T> createTypeReference();
 }

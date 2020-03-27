@@ -11,7 +11,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
 
-public class AutoRental extends UnicastRemoteObject {
+public class AutoRental extends UnicastRemoteObject implements Model{
     private final UUID pointOfRental;
     private final List<Auto> autos;
 

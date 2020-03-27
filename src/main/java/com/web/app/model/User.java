@@ -8,7 +8,7 @@ import com.web.app.dao.UserDao;
 import java.util.List;
 import java.util.UUID;
 
-public class User {
+public class User implements Model {
 
     @JsonProperty("_id")
     private UUID id;
@@ -84,6 +84,10 @@ public class User {
 
     public String hashPassword(char[] password) {
         return BCrypt.withDefaults().hashToString(16, password);
+    }
+
+    public void setPassword(String password) {
+        this.passwordHash = hashPassword(password.toCharArray());
     }
 
     @Override
