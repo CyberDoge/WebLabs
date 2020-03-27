@@ -1,15 +1,11 @@
 package com.web.app.main;
 
-import com.web.app.db_services.DBService;
-import com.web.app.model.User;
-
-import java.util.Objects;
-import java.util.UUID;
+import com.web.app.controller.MainController;
 
 public class Main {
     public static void main(String[] args) {
-        DBService dbService = new DBService();
-        dbService.runChangeLog();
-        
+        try (MainController mainController = new MainController(args[0])) {
+            mainController.start();
+        }
     }
 }

@@ -1,37 +1,25 @@
 package com.web.app.dao;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
 import com.web.app.model.Auto;
+import org.bson.Document;
 
-import java.util.UUID;
+import java.lang.reflect.Type;
 
-public class AutoDao implements ModelDao<Auto> {
-
-    private MongoClient mongoClient;
-
-    @Override
-    public Auto getModelById(UUID id) {
-        return null;
-//        return mongoClient.getDatabase("web").getCollection("auto");
+public class AutoDao extends ModelDaoImpl<Auto> {
+    public AutoDao(MongoClient mongoClient) {
+        super(mongoClient);
     }
 
     @Override
-    public void addModel(Auto model) {
-
+    protected MongoCollection<Document> getCollection() {
+        return getMongoClient().getDatabase("web").getCollection("autos");
     }
 
     @Override
-    public Auto deleteModelById(UUID id) {
-        return null;
-    }
-
-    @Override
-    public int getModelsCount(Class<Auto> modelClass) {
-        return 0;
-    }
-
-    @Override
-    public void setMongoClient(MongoClient mongoClient) {
-        this.mongoClient = mongoClient;
+    protected TypeReference<Auto> createTypeReference() {
+        return new TypeReference<>(){};
     }
 }

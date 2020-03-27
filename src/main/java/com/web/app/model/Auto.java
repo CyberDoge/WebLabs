@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 
-public class Auto implements Serializable {
+public class Auto implements Serializable, Model {
     private UUID id;
     private String model;
     private String producer;
