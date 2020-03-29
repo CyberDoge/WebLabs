@@ -45,7 +45,7 @@ public class UserInputInterface implements ControlInterface {
         }
     }
 
-    public void setupDbFun() throws IOException, NumberFormatException {
+    public void setupDbOperation() throws IOException, NumberFormatException {
         System.out.println("print number of operation: \n" +
                 "(1) read by id,\n" +
                 "(2) read all,\n" +

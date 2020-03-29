@@ -43,11 +43,16 @@ public class User implements Model {
     }
 
     public UUID getId() {
-        return UUID.randomUUID();
+        return this.id;
     }
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    @Override
+    public void setPrimaryField(String value) {
+        this.name = value;
     }
 
     public String getName() {

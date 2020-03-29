@@ -8,7 +8,7 @@ public interface ControlInterface {
 
     void setupDbModel() throws Exception;
 
-    void setupDbFun() throws IOException, NumberFormatException;
+    void setupDbOperation() throws IOException, NumberFormatException;
 
     ModelValue getModel();
 

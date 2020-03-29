@@ -8,9 +8,8 @@ public class AutoControlInterface implements ControlInterface {
     private ModelValue model;
 
     private int step = 0;
-    private int uuidIndex = 0;
     private int jsonListIndex = 0;
-    private int functionNumber = 0;
+    private int operationNumber = 0;
 
     private List<UUID> uuidList;
     private List<String> userJsonList;
@@ -46,8 +45,7 @@ public class AutoControlInterface implements ControlInterface {
     }
 
     @Override
-    public void setupDbFun() {
-        ++this.functionNumber;
+    public void setupDbOperation() {
     }
 
     @Override
@@ -56,8 +54,13 @@ public class AutoControlInterface implements ControlInterface {
     }
 
     @Override
+    public int getOperation() {
+        return this.operationNumber;
+    }
+
+    @Override
     public UUID getId() {
-        return this.uuidList.get(uuidIndex++);
+        return this.uuidList.get(step);
     }
 
     @Override
@@ -74,14 +77,15 @@ public class AutoControlInterface implements ControlInterface {
         }
     }
 
-    @Override
-    public int getOperation() {
-        return this.functionNumber;
-    }
 
     @Override
     public void reset() {
         this.jsonListIndex = 0;
-        ++this.step;
+        if (this.operationNumber == 5) {
+            ++this.step;
+            this.operationNumber = 0;
+        } else {
+            ++this.operationNumber;
+        }
     }
 }

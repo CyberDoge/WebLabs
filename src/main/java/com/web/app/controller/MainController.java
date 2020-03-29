@@ -18,9 +18,7 @@ import com.web.app.model.User;
 import com.web.app.utils.JsonReader;
 
 import java.io.Closeable;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static java.util.stream.Collectors.joining;
 
@@ -44,10 +42,10 @@ public class MainController implements Closeable {
         this.mapper = new ObjectMapper();
 
         if (controlType != null && controlType.equalsIgnoreCase("auto")) {
-            List<String> uuids = JsonReader.readValuesFromFile("uuids.json");
-            List<String> autos = JsonReader.readValuesFromFile("autos.json");
-            List<String> users = JsonReader.readValuesFromFile("users.json");
-            List<String> autoRentals = JsonReader.readValuesFromFile("autoRentals.json");
+            List<String> uuids = JsonReader.readValuesFromFile("uuids.txt");
+            List<String> autos = JsonReader.readValuesFromFile("autos.txt");
+            List<String> users = JsonReader.readValuesFromFile("users.txt");
+            List<String> autoRentals = JsonReader.readValuesFromFile("autoRentals.txt");
             this.controlInterface = new AutoControlInterface(uuids, users, autoRentals, autos);
         } else {
             this.controlInterface = new UserInputInterface();
@@ -57,7 +55,7 @@ public class MainController implements Closeable {
     public void start() {
         try {
             this.controlInterface.setupDbModel();
-            this.controlInterface.setupDbFun();
+            this.controlInterface.setupDbOperation();
             this.selectCurrentModel();
             int command = this.controlInterface.getOperation();
             executeAndPrintCommand(command);
@@ -94,7 +92,7 @@ public class MainController implements Closeable {
                 UUID id = controlInterface.getId();
                 Optional<?> modelById = this.currentModelDao.getModelById(id);
                 var model = modelById.orElseThrow(() -> new NoModelWithSuchIdException(id.toString()));
-                System.out.println(model.toString());
+                System.out.println("model was found: " + model.toString());
                 break;
             }
             case 2:
@@ -103,12 +101,19 @@ public class MainController implements Closeable {
                                 .getAll()
                                 .stream()
                                 .map(Object::toString)
-                                .collect(joining("\n-------------\n"))
+                                .collect(
+                                        joining(
+                                                "\n", "all models: \n", "\n-------------\n"
+                                        )
+                                )
                 );
                 break;
             case 3: {
                 Model model = mapper.readValue(controlInterface.getJsonObject(), controlInterface.getModel().getClazz());
+                model.setPrimaryField("newField" + GregorianCalendar.getInstance().get(Calendar.MINUTE));
+                model.setId(UUID.randomUUID());
                 currentModelDao.insertModel(model);
+                System.out.println("model inserted:\n" + model);
                 break;
             }
             case 4: {
@@ -116,11 +121,13 @@ public class MainController implements Closeable {
                 this.controlInterface.getJsonObject();
                 Model model = mapper.readValue(controlInterface.getJsonObject(), controlInterface.getModel().getClazz());
                 currentModelDao.update(uuid, model);
+                System.out.println("model was updated:\n" + model);
                 break;
             }
             case 5:
                 UUID uuid = controlInterface.getId();
                 currentModelDao.deleteModelById(uuid);
+                System.out.println("model was deleted");
                 break;
         }
     }
