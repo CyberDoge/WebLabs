@@ -19,6 +19,18 @@ public class UserInputInterface implements ControlInterface {
         this.operation = -1;
     }
 
+    @Override
+    public void askForInterrupt() throws InterruptedException {
+        System.out.println("exit? y/N");
+        try {
+            if (this.reader.readLine().equalsIgnoreCase("y")) {
+                throw new InterruptedException();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public boolean isContinue() {
         System.out.println("continue? Y/n");
         String answer = "n";
@@ -45,7 +57,7 @@ public class UserInputInterface implements ControlInterface {
         }
     }
 
-    public void setupDbFun() throws IOException, NumberFormatException {
+    public void setupDbOperation() throws IOException, NumberFormatException {
         System.out.println("print number of operation: \n" +
                 "(1) read by id,\n" +
                 "(2) read all,\n" +

@@ -1,10 +1,13 @@
 package com.web.app.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 
 public class Auto implements Serializable, Model {
+    @JsonProperty("_id")
     private UUID id;
     private String model;
     private String producer;
@@ -45,6 +48,11 @@ public class Auto implements Serializable, Model {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    @Override
+    public void setPrimaryField(String value) {
+        this.model = value;
     }
 
     public String getModel() {

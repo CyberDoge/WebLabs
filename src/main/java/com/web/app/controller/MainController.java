@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.web.app.controlInterface.AutoControlInterface;
 import com.web.app.controlInterface.ControlInterface;
+import com.web.app.controlInterface.InterruptedException;
 import com.web.app.controlInterface.UserInputInterface;
 import com.web.app.dao.AutoDao;
 import com.web.app.dao.AutoRentalDao;
@@ -17,14 +18,11 @@ import com.web.app.model.Model;
 import com.web.app.model.User;
 import com.web.app.utils.JsonReader;
 
-import java.io.Closeable;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static java.util.stream.Collectors.joining;
 
-public class MainController implements Closeable {
+public class MainController {
     private DBService dbService;
     private ModelDao<User> userDao;
     private ModelDao<Auto> autoDao;
@@ -35,19 +33,18 @@ public class MainController implements Closeable {
 
     private ControlInterface controlInterface;
 
-    public MainController(String controlType) {
-        this.dbService = new DBService();
-        this.dbService.runChangeLog();
-        this.userDao = new UserDao(dbService.getOrCreateMongoClient());
-        this.autoDao = new AutoDao(dbService.getOrCreateMongoClient());
-        this.autoRentalDao = new AutoRentalDao(dbService.getOrCreateMongoClient());
+    public MainController(DBService dbService, String controlType) {
+        this.dbService = dbService;
+        this.userDao = new UserDao(dbService.getOrCreateMongoClient("users"));
+        this.autoDao = new AutoDao(dbService.getOrCreateMongoClient("autos"));
+        this.autoRentalDao = new AutoRentalDao(dbService.getOrCreateMongoClient("autoRentals"));
         this.mapper = new ObjectMapper();
 
         if (controlType != null && controlType.equalsIgnoreCase("auto")) {
-            List<String> uuids = JsonReader.readValuesFromFile("uuids.json");
-            List<String> autos = JsonReader.readValuesFromFile("autos.json");
-            List<String> users = JsonReader.readValuesFromFile("users.json");
-            List<String> autoRentals = JsonReader.readValuesFromFile("autoRentals.json");
+            List<String> uuids = JsonReader.readValuesFromFile("uuids.txt");
+            List<String> autos = JsonReader.readValuesFromFile("autos.txt");
+            List<String> users = JsonReader.readValuesFromFile("users.txt");
+            List<String> autoRentals = JsonReader.readValuesFromFile("autoRentals.txt");
             this.controlInterface = new AutoControlInterface(uuids, users, autoRentals, autos);
         } else {
             this.controlInterface = new UserInputInterface();
@@ -56,8 +53,17 @@ public class MainController implements Closeable {
 
     public void start() {
         try {
+            this.controlInterface.askForInterrupt();
+            startLoop();
+        } catch (InterruptedException e) {
+            System.out.println("exiting...");
+        }
+    }
+
+    private void startLoop() {
+        try {
             this.controlInterface.setupDbModel();
-            this.controlInterface.setupDbFun();
+            this.controlInterface.setupDbOperation();
             this.selectCurrentModel();
             int command = this.controlInterface.getOperation();
             executeAndPrintCommand(command);
@@ -68,7 +74,7 @@ public class MainController implements Closeable {
         } finally {
             this.endCycle();
             if (this.controlInterface.isContinue()) {
-                start();
+                startLoop();
             }
         }
     }
@@ -94,7 +100,7 @@ public class MainController implements Closeable {
                 UUID id = controlInterface.getId();
                 Optional<?> modelById = this.currentModelDao.getModelById(id);
                 var model = modelById.orElseThrow(() -> new NoModelWithSuchIdException(id.toString()));
-                System.out.println(model.toString());
+                System.out.println("model was found: " + model.toString());
                 break;
             }
             case 2:
@@ -103,24 +109,31 @@ public class MainController implements Closeable {
                                 .getAll()
                                 .stream()
                                 .map(Object::toString)
-                                .collect(joining("\n-------------\n"))
+                                .collect(
+                                        joining(
+                                                "\n", "all models: \n", "\n-------------\n"
+                                        )
+                                )
                 );
                 break;
             case 3: {
                 Model model = mapper.readValue(controlInterface.getJsonObject(), controlInterface.getModel().getClazz());
+                model.setPrimaryField("newField" + GregorianCalendar.getInstance().get(Calendar.MINUTE));
+                model.setId(UUID.randomUUID());
                 currentModelDao.insertModel(model);
+                System.out.println("model inserted:\n" + model);
                 break;
             }
             case 4: {
                 UUID uuid = controlInterface.getId();
-                this.controlInterface.getJsonObject();
-                Model model = mapper.readValue(controlInterface.getJsonObject(), controlInterface.getModel().getClazz());
-                currentModelDao.update(uuid, model);
+                var result = currentModelDao.update(uuid, controlInterface.getJsonObject());
+                System.out.println("model was updated:\n" + result);
                 break;
             }
             case 5:
                 UUID uuid = controlInterface.getId();
                 currentModelDao.deleteModelById(uuid);
+                System.out.println("model was deleted");
                 break;
         }
     }
@@ -138,10 +151,5 @@ public class MainController implements Closeable {
     private void endCycle() {
         this.currentModelDao = null;
         this.controlInterface.reset();
-    }
-
-    @Override
-    public void close() {
-        this.dbService.getOrCreateMongoClient().close();
     }
 }

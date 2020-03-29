@@ -22,11 +22,11 @@ public abstract class ModelDaoImpl<T extends Model> implements ModelDao<T> {
     }
 
     @Override
-    public void update(UUID id, Model model) {
-        final ObjectMapper mapper = new ObjectMapper();
-        this.getCollection().updateOne(new BasicDBObject("_id", id), new Document(
-                mapper.convertValue(model, Map.class)
-        ));
+    public Document update(UUID id, String json) {
+        Document update = new Document();
+        Document setData = Document.parse(json);
+        update.append("$set", setData);
+        return this.getCollection().findOneAndUpdate(new BasicDBObject("_id", id.toString()), update);
     }
 
     @Override
@@ -82,4 +82,9 @@ public abstract class ModelDaoImpl<T extends Model> implements ModelDao<T> {
     protected abstract MongoCollection<Document> getCollection();
 
     protected abstract TypeReference<T> createTypeReference();
+
+    @Override
+    public void close() {
+        this.getMongoClient().close();
+    }
 }

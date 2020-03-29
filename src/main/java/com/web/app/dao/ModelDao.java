@@ -2,12 +2,14 @@ package com.web.app.dao;
 
 import com.mongodb.MongoClient;
 import com.web.app.model.Model;
+import org.bson.Document;
 
+import java.io.Closeable;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface ModelDao<T extends Model> {
+public interface ModelDao<T extends Model> extends Closeable {
 
     List<T> getAll();
 
@@ -21,6 +23,6 @@ public interface ModelDao<T extends Model> {
 
     void setMongoClient(MongoClient mongoClient);
 
-    void update(UUID id, Model model);
+    Document update(UUID id, String json);
 
 }
