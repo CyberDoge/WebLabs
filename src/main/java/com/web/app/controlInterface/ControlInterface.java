@@ -19,4 +19,6 @@ public interface ControlInterface {
     int getOperation();
 
     void reset();
+
+    void askForInterrupt() throws InterruptedException;
 }

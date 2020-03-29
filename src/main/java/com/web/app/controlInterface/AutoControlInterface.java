@@ -88,4 +88,8 @@ public class AutoControlInterface implements ControlInterface {
             ++this.operationNumber;
         }
     }
+
+    @Override
+    public void askForInterrupt() {
+    }
 }

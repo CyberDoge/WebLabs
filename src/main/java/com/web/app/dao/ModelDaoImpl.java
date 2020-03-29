@@ -82,4 +82,9 @@ public abstract class ModelDaoImpl<T extends Model> implements ModelDao<T> {
     protected abstract MongoCollection<Document> getCollection();
 
     protected abstract TypeReference<T> createTypeReference();
+
+    @Override
+    public void close() {
+        this.getMongoClient().close();
+    }
 }

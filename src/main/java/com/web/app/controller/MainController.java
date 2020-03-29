@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.web.app.controlInterface.AutoControlInterface;
 import com.web.app.controlInterface.ControlInterface;
+import com.web.app.controlInterface.InterruptedException;
 import com.web.app.controlInterface.UserInputInterface;
 import com.web.app.dao.AutoDao;
 import com.web.app.dao.AutoRentalDao;
@@ -17,12 +18,11 @@ import com.web.app.model.Model;
 import com.web.app.model.User;
 import com.web.app.utils.JsonReader;
 
-import java.io.Closeable;
 import java.util.*;
 
 import static java.util.stream.Collectors.joining;
 
-public class MainController implements Closeable {
+public class MainController {
     private DBService dbService;
     private ModelDao<User> userDao;
     private ModelDao<Auto> autoDao;
@@ -33,12 +33,11 @@ public class MainController implements Closeable {
 
     private ControlInterface controlInterface;
 
-    public MainController(String controlType) {
-        this.dbService = new DBService();
-        this.dbService.runChangeLog();
-        this.userDao = new UserDao(dbService.getOrCreateMongoClient());
-        this.autoDao = new AutoDao(dbService.getOrCreateMongoClient());
-        this.autoRentalDao = new AutoRentalDao(dbService.getOrCreateMongoClient());
+    public MainController(DBService dbService, String controlType) {
+        this.dbService = dbService;
+        this.userDao = new UserDao(dbService.getOrCreateMongoClient("users"));
+        this.autoDao = new AutoDao(dbService.getOrCreateMongoClient("autos"));
+        this.autoRentalDao = new AutoRentalDao(dbService.getOrCreateMongoClient("autoRentals"));
         this.mapper = new ObjectMapper();
 
         if (controlType != null && controlType.equalsIgnoreCase("auto")) {
@@ -54,6 +53,15 @@ public class MainController implements Closeable {
 
     public void start() {
         try {
+            this.controlInterface.askForInterrupt();
+            startLoop();
+        } catch (InterruptedException e) {
+            System.out.println("exiting...");
+        }
+    }
+
+    private void startLoop() {
+        try {
             this.controlInterface.setupDbModel();
             this.controlInterface.setupDbOperation();
             this.selectCurrentModel();
@@ -63,11 +71,10 @@ public class MainController implements Closeable {
             System.out.println(e.getMessage());
         } catch (Exception e) {
             System.out.println("Bad input, try again");
-            e.printStackTrace();
         } finally {
             this.endCycle();
             if (this.controlInterface.isContinue()) {
-                start();
+                startLoop();
             }
         }
     }
@@ -144,10 +151,5 @@ public class MainController implements Closeable {
     private void endCycle() {
         this.currentModelDao = null;
         this.controlInterface.reset();
-    }
-
-    @Override
-    public void close() {
-        this.dbService.getOrCreateMongoClient().close();
     }
 }

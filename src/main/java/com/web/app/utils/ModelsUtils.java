@@ -1,6 +1,5 @@
 package com.web.app.utils;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.app.model.Auto;
 import com.web.app.model.AutoRental;
@@ -85,10 +84,10 @@ public class ModelsUtils {
             UUID id = UUID.randomUUID();
             Auto auto = new Auto(
                     id,
-                    "model #" + i + fromIndex,
-                    "producer #" + i + fromIndex,
-                    i * 10 + fromIndex,
-                    i * 100 + fromIndex
+                    "model #" + (i + fromIndex),
+                    "producer #" + (i + fromIndex),
+                    i * (10 + fromIndex),
+                    i * (100 + fromIndex)
             );
             autos.add(auto);
         }
@@ -120,9 +119,9 @@ public class ModelsUtils {
             }
             User user = new User(
                     id,
-                    "name" + i + fromIndex,
-                    "login" + i + fromIndex,
-                    "password" + i + fromIndex,
+                    "name" + (i + fromIndex),
+                    "login" + (i + fromIndex),
+                    "password" + (i + fromIndex),
                     autoRentalIds
             );
             users.add(user);

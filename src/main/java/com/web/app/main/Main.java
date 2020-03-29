@@ -1,15 +1,20 @@
 package com.web.app.main;
 
+import com.web.app.controller.LoginController;
 import com.web.app.controller.MainController;
+import com.web.app.db_services.DBService;
 
 public class Main {
     public static void main(final String[] args) {
-        String argument = null;
+        String controlType = null;
         if (args.length > 0) {
-            argument = args[0];
+            controlType = args[0];
         }
-        try (MainController mainController = new MainController(argument)) {
-            mainController.start();
-        }
+        DBService dbService = new DBService();
+        dbService.runChangeLog();
+        MainController mainController = new MainController(dbService, controlType);
+        LoginController loginController = new LoginController(dbService);
+        mainController.start();
+        System.out.println(loginController.authenticateUser("login1", "password1".toCharArray()));
     }
 }
