@@ -2,6 +2,7 @@ package com.web.app.dao;
 
 import com.mongodb.MongoClient;
 import com.web.app.model.Model;
+import org.bson.Document;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,6 @@ public interface ModelDao<T extends Model> {
 
     void setMongoClient(MongoClient mongoClient);
 
-    void update(UUID id, Model model);
+    Document update(UUID id, String json);
 
 }

@@ -63,6 +63,7 @@ public class MainController implements Closeable {
             System.out.println(e.getMessage());
         } catch (Exception e) {
             System.out.println("Bad input, try again");
+            e.printStackTrace();
         } finally {
             this.endCycle();
             if (this.controlInterface.isContinue()) {
@@ -118,10 +119,8 @@ public class MainController implements Closeable {
             }
             case 4: {
                 UUID uuid = controlInterface.getId();
-                this.controlInterface.getJsonObject();
-                Model model = mapper.readValue(controlInterface.getJsonObject(), controlInterface.getModel().getClazz());
-                currentModelDao.update(uuid, model);
-                System.out.println("model was updated:\n" + model);
+                var result = currentModelDao.update(uuid, controlInterface.getJsonObject());
+                System.out.println("model was updated:\n" + result);
                 break;
             }
             case 5:
