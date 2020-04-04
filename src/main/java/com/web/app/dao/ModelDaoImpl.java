@@ -2,6 +2,8 @@ package com.web.app.dao;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.MapType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
@@ -54,8 +56,9 @@ public abstract class ModelDaoImpl<T extends Model> implements ModelDao<T> {
     @Override
     public void insertModel(Model model) {
         final ObjectMapper mapper = new ObjectMapper();
-        getCollection().insertOne(new Document(
-                mapper.convertValue(model, Map.class)
+        TypeFactory typeFactory = mapper.getTypeFactory();
+        MapType mapType = typeFactory.constructMapType(HashMap.class, String.class, Object.class);
+        getCollection().insertOne(new Document(mapper.convertValue(model, mapType)
         ));
     }
 

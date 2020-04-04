@@ -6,7 +6,6 @@ import com.mongodb.client.MongoDatabase;
 import com.web.app.model.Auto;
 import com.web.app.model.AutoRental;
 import com.web.app.model.User;
-import com.web.app.utils.JsonReader;
 import com.web.app.utils.ModelsUtils;
 import org.bson.Document;
 
@@ -18,8 +17,6 @@ import static com.web.app.utils.ModelsUtils.*;
 
 @ChangeLog
 public class UsersChangeLog {
-
-    private static final String USERS_COLLECTION_NAME = "users";
 
     @ChangeSet(id = "setPrimaryData", order = "001", author = "me")
     public void changeSet1(MongoDatabase mongoDatabase) throws IOException {

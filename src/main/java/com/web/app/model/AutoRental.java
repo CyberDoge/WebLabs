@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class AutoRental implements Model {
     @JsonProperty("_id")
@@ -42,10 +44,6 @@ public class AutoRental implements Model {
         this.id = id;
     }
 
-    @Override
-    public void setPrimaryField(String value) {
-    }
-
     @JsonIgnore
     public UUID getAutoByIndex(int index) {
         return this.autos.get(index);
@@ -61,10 +59,11 @@ public class AutoRental implements Model {
         this.autos.remove(index);
     }
 
-
-    public List<Auto> sort(List<Auto> autos) {
-        ArrayList<Auto> tmp = new ArrayList<>(new HashSet<>(autos));
-        tmp.sort(Comparator.comparing(Auto::getPrice));
-        return tmp;
+    @Override
+    public String toString() {
+        return "AutoRental{" +
+                "id=" + id +
+                ", autos=" + autos +
+                '}';
     }
 }

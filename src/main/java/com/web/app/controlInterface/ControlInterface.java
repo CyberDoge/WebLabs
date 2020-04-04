@@ -1,24 +1,20 @@
 package com.web.app.controlInterface;
 
+import com.web.app.customExceptions.IncorrectUserInputException;
+
 import java.io.IOException;
 import java.util.UUID;
 
 public interface ControlInterface {
     boolean isContinue();
 
-    void setupDbModel() throws Exception;
+    ModelValue selectDbModel() throws IncorrectUserInputException, IOException;
 
-    void setupDbOperation() throws IOException, NumberFormatException;
-
-    ModelValue getModel();
+    int selectDbOperation() throws IOException, NumberFormatException;
 
     UUID getId();
 
     String getJsonObject();
 
-    int getOperation();
-
-    void reset();
-
-    void askForInterrupt() throws InterruptedException;
+    boolean isNeedToInterrupt();
 }

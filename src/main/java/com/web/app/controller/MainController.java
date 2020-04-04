@@ -2,11 +2,11 @@ package com.web.app.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.web.app.controlInterface.AutoControlInterface;
 import com.web.app.controlInterface.ControlInterface;
-import com.web.app.controlInterface.InterruptedException;
+import com.web.app.controlInterface.ModelValue;
+import com.web.app.controlInterface.UserEmulatorControlInterface;
 import com.web.app.controlInterface.UserInputInterface;
+import com.web.app.customExceptions.NoModelWithSuchIdException;
 import com.web.app.dao.AutoDao;
 import com.web.app.dao.AutoRentalDao;
 import com.web.app.dao.ModelDao;
@@ -17,13 +17,15 @@ import com.web.app.model.AutoRental;
 import com.web.app.model.Model;
 import com.web.app.model.User;
 import com.web.app.utils.JsonReader;
+import org.bson.Document;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static java.util.stream.Collectors.joining;
 
 public class MainController {
-    private DBService dbService;
     private ModelDao<User> userDao;
     private ModelDao<Auto> autoDao;
     private ModelDao<AutoRental> autoRentalDao;
@@ -32,9 +34,9 @@ public class MainController {
     private ModelDao<? extends Model> currentModelDao;
 
     private ControlInterface controlInterface;
+    private ModelValue model;
 
     public MainController(DBService dbService, String controlType) {
-        this.dbService = dbService;
         this.userDao = new UserDao(dbService.getOrCreateMongoClient("users"));
         this.autoDao = new AutoDao(dbService.getOrCreateMongoClient("autos"));
         this.autoRentalDao = new AutoRentalDao(dbService.getOrCreateMongoClient("autoRentals"));
@@ -45,27 +47,24 @@ public class MainController {
             List<String> autos = JsonReader.readValuesFromFile("autos.txt");
             List<String> users = JsonReader.readValuesFromFile("users.txt");
             List<String> autoRentals = JsonReader.readValuesFromFile("autoRentals.txt");
-            this.controlInterface = new AutoControlInterface(uuids, users, autoRentals, autos);
+            this.controlInterface = new UserEmulatorControlInterface(uuids, users, autoRentals, autos);
         } else {
             this.controlInterface = new UserInputInterface();
         }
     }
 
     public void start() {
-        try {
-            this.controlInterface.askForInterrupt();
+        if (this.controlInterface.isNeedToInterrupt()) {
+            System.out.println("nothing was started...");
+        } else {
             startLoop();
-        } catch (InterruptedException e) {
-            System.out.println("exiting...");
         }
     }
 
     private void startLoop() {
         try {
-            this.controlInterface.setupDbModel();
-            this.controlInterface.setupDbOperation();
             this.selectCurrentModel();
-            int command = this.controlInterface.getOperation();
+            int command = this.controlInterface.selectDbOperation();
             executeAndPrintCommand(command);
         } catch (NoModelWithSuchIdException e) {
             System.out.println(e.getMessage());
@@ -79,9 +78,9 @@ public class MainController {
         }
     }
 
-    private void selectCurrentModel() {
-        var model = this.controlInterface.getModel();
-        switch (model) {
+    private void selectCurrentModel() throws Exception {
+        this.model = this.controlInterface.selectDbModel();
+        switch (this.model) {
             case USER:
                 this.currentModelDao = this.userDao;
                 break;
@@ -117,16 +116,17 @@ public class MainController {
                 );
                 break;
             case 3: {
-                Model model = mapper.readValue(controlInterface.getJsonObject(), controlInterface.getModel().getClazz());
-                model.setPrimaryField("newField" + GregorianCalendar.getInstance().get(Calendar.MINUTE));
-                model.setId(UUID.randomUUID());
+                Model model = mapper.readValue(controlInterface.getJsonObject(), this.model.getClazz());
+                if (model.getId() == null) {
+                    model.setId(UUID.randomUUID());
+                }
                 currentModelDao.insertModel(model);
                 System.out.println("model inserted:\n" + model);
                 break;
             }
             case 4: {
                 UUID uuid = controlInterface.getId();
-                var result = currentModelDao.update(uuid, controlInterface.getJsonObject());
+                Document result = currentModelDao.update(uuid, controlInterface.getJsonObject());
                 System.out.println("model was updated:\n" + result);
                 break;
             }
@@ -138,18 +138,7 @@ public class MainController {
         }
     }
 
-    private Object mergeJSONObjects(Model primaryModel, String modelAsJson) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        String primaryJson = objectMapper.writeValueAsString(primaryModel);
-        ObjectNode objectNode = objectMapper.createObjectNode();
-        objectMapper.readTree(primaryJson).fields().forEachRemaining(entry -> objectNode.set(entry.getKey(), entry.getValue()));
-        objectMapper.readTree(modelAsJson).fields().forEachRemaining(entry -> objectNode.set(entry.getKey(), entry.getValue()));
-        return objectMapper;
-
-    }
-
     private void endCycle() {
         this.currentModelDao = null;
-        this.controlInterface.reset();
     }
 }

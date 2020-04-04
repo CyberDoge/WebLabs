@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class AutoControlInterface implements ControlInterface {
+public class UserEmulatorControlInterface implements ControlInterface {
     private ModelValue model;
 
     private int step = 0;
@@ -16,7 +16,7 @@ public class AutoControlInterface implements ControlInterface {
     private List<String> autoRentalJsonList;
     private List<String> autoJsonList;
 
-    public AutoControlInterface(List<String> uuidList, List<String> userJsonList, List<String> autoRentalJsonList, List<String> autoJsonList) {
+    public UserEmulatorControlInterface(List<String> uuidList, List<String> userJsonList, List<String> autoRentalJsonList, List<String> autoJsonList) {
         this.uuidList = uuidList.stream().map(UUID::fromString).collect(Collectors.toList());
         this.userJsonList = userJsonList;
         this.autoRentalJsonList = autoRentalJsonList;
@@ -25,11 +25,12 @@ public class AutoControlInterface implements ControlInterface {
 
     @Override
     public boolean isContinue() {
+        reset();
         return step < 3;
     }
 
     @Override
-    public void setupDbModel() {
+    public ModelValue selectDbModel() {
         switch (step) {
             case 0:
                 model = ModelValue.USER;
@@ -42,19 +43,11 @@ public class AutoControlInterface implements ControlInterface {
                 break;
         }
         System.out.println("for model " + model.getValue());
+        return model;
     }
 
     @Override
-    public void setupDbOperation() {
-    }
-
-    @Override
-    public ModelValue getModel() {
-        return this.model;
-    }
-
-    @Override
-    public int getOperation() {
+    public int selectDbOperation() {
         return this.operationNumber;
     }
 
@@ -65,7 +58,7 @@ public class AutoControlInterface implements ControlInterface {
 
     @Override
     public String getJsonObject() {
-        switch (getModel()) {
+        switch (this.model) {
             case USER:
                 return userJsonList.get(jsonListIndex);
             case AUTO:
@@ -78,18 +71,18 @@ public class AutoControlInterface implements ControlInterface {
     }
 
 
-    @Override
-    public void reset() {
+    private void reset() {
         this.jsonListIndex = 0;
         if (this.operationNumber == 5) {
             ++this.step;
-            this.operationNumber = 0;
+            this.operationNumber = 1;
         } else {
             ++this.operationNumber;
         }
     }
 
     @Override
-    public void askForInterrupt() {
+    public boolean isNeedToInterrupt() {
+        return false;
     }
 }

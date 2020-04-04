@@ -1,9 +1,7 @@
 package com.web.app.model;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.web.app.dao.UserDao;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,8 +14,6 @@ public class User implements Model {
     private String login;
     private String passwordHash;
     private List<UUID> autoRentalIds;
-    @JsonIgnore
-    private UserDao userDao;
 
     public User() {
     }
@@ -30,29 +26,12 @@ public class User implements Model {
         this.autoRentalIds = autoRentalIds;
     }
 
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
-    }
-
-    public void addAutoRentalId(UUID id) {
-        this.autoRentalIds.add(id);
-    }
-
-    public void deleteAutoRentalIndex(int index) {
-        this.autoRentalIds.remove(index);
-    }
-
     public UUID getId() {
         return this.id;
     }
 
     public void setId(UUID id) {
         this.id = id;
-    }
-
-    @Override
-    public void setPrimaryField(String value) {
-        this.name = value;
     }
 
     public String getName() {

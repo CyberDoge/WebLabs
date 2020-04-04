@@ -1,5 +1,7 @@
 package com.web.app.controlInterface;
 
+import com.web.app.customExceptions.IncorrectUserInputException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -7,28 +9,20 @@ import java.util.UUID;
 
 public class UserInputInterface implements ControlInterface {
     private BufferedReader reader;
-    private ModelValue model;
-    private int operation;
 
     public UserInputInterface() {
         this.reader = new BufferedReader(new InputStreamReader(System.in));
     }
 
-    public void reset() {
-        this.model = null;
-        this.operation = -1;
-    }
-
     @Override
-    public void askForInterrupt() throws InterruptedException {
+    public boolean isNeedToInterrupt() {
         System.out.println("exit? y/N");
         try {
-            if (this.reader.readLine().equalsIgnoreCase("y")) {
-                throw new InterruptedException();
-            }
+            return this.reader.readLine().equalsIgnoreCase("y");
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return true;
     }
 
     public boolean isContinue() {
@@ -43,33 +37,31 @@ public class UserInputInterface implements ControlInterface {
 
     }
 
-    public void setupDbModel() throws Exception {
-        System.out.println("select model: user, autoRental, auto");
+    public ModelValue selectDbModel() throws IncorrectUserInputException, IOException {
         String res = this.reader.readLine();
+        System.out.println("select model: user, autoRental, auto");
         if (res.equalsIgnoreCase("user")) {
-            this.model = ModelValue.USER;
+            return ModelValue.USER;
         } else if (res.equalsIgnoreCase("autoRental")) {
-            this.model = ModelValue.AUTO_RENTAL;
+            return ModelValue.AUTO_RENTAL;
         } else if (res.equalsIgnoreCase("auto")) {
-            this.model = ModelValue.AUTO;
+            return ModelValue.AUTO;
         } else {
-            throw new Exception("bad input");
+            throw new IncorrectUserInputException("bad input");
         }
     }
 
-    public void setupDbOperation() throws IOException, NumberFormatException {
+    public int selectDbOperation() throws IOException, NumberFormatException {
         System.out.println("print number of operation: \n" +
                 "(1) read by id,\n" +
                 "(2) read all,\n" +
                 "(3) add,\n" +
                 "(4) update by id,\n" +
                 "(5) delete by id");
-        this.operation = Integer.parseInt(this.reader.readLine());
+
+        return Integer.parseInt(this.reader.readLine());
     }
 
-    public ModelValue getModel() {
-        return model;
-    }
 
     @Override
     public UUID getId() {
@@ -99,9 +91,5 @@ public class UserInputInterface implements ControlInterface {
             e.printStackTrace();
         }
         return "";
-    }
-
-    public int getOperation() {
-        return operation;
     }
 }

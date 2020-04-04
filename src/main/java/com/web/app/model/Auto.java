@@ -50,11 +50,6 @@ public class Auto implements Serializable, Model {
         this.id = id;
     }
 
-    @Override
-    public void setPrimaryField(String value) {
-        this.model = value;
-    }
-
     public String getModel() {
         return model;
     }

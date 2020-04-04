@@ -6,6 +6,4 @@ public interface Model {
     UUID getId();
 
     void setId(UUID id);
-
-    void setPrimaryField(String value);
 }

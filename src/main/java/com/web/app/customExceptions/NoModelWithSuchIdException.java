@@ -1,4 +1,4 @@
-package com.web.app.controller;
+package com.web.app.customExceptions;
 
 public class NoModelWithSuchIdException extends Exception {
     public NoModelWithSuchIdException(String id) {
