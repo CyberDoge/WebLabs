@@ -1,5 +1,6 @@
 package com.web.app.dao;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mongodb.MongoClient;
 import com.web.app.model.Model;
 import org.bson.Document;
@@ -23,6 +24,6 @@ public interface ModelDao<T extends Model> extends Closeable {
 
     void setMongoClient(MongoClient mongoClient);
 
-    Document update(UUID id, String json);
+    Document update(UUID id, String json) throws JsonProcessingException;
 
 }

@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class AutoRental implements Model {
     @JsonProperty("_id")
@@ -15,8 +15,6 @@ public class AutoRental implements Model {
 
 
     public AutoRental() {
-        this.id = UUID.randomUUID();
-        this.autos = new ArrayList<>();
     }
 
     public AutoRental(UUID id, List<UUID> autos) {
@@ -25,7 +23,7 @@ public class AutoRental implements Model {
     }
 
     @JsonCreator
-    public static AutoRental createAutoRental(@JsonProperty("pointOfRental") String pointOfRental,
+    public static AutoRental createAutoRental(@JsonProperty("_id") String pointOfRental,
                                               @JsonProperty("autos") List<UUID> autos) {
         return new AutoRental(UUID.fromString(pointOfRental), autos);
     }
@@ -63,7 +61,7 @@ public class AutoRental implements Model {
     public String toString() {
         return "AutoRental{" +
                 "id=" + id +
-                ", autos=" + autos +
+                ", autos=[" + autos.stream().map(UUID::toString).collect(Collectors.joining(", ")) +
                 '}';
     }
 }

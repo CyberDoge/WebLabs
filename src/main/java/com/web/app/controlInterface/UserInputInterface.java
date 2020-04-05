@@ -38,8 +38,8 @@ public class UserInputInterface implements ControlInterface {
     }
 
     public ModelValue selectDbModel() throws IncorrectUserInputException, IOException {
-        String res = this.reader.readLine();
         System.out.println("select model: user, autoRental, auto");
+        String res = this.reader.readLine();
         if (res.equalsIgnoreCase("user")) {
             return ModelValue.USER;
         } else if (res.equalsIgnoreCase("autoRental")) {

@@ -14,7 +14,7 @@ public class AutoRentalDao extends ModelDaoImpl<AutoRental> {
 
     @Override
     protected MongoCollection<Document> getCollection() {
-        return getMongoClient().getDatabase("web").getCollection("auto-rentals");
+        return getMongoClient().getDatabase("web").getCollection("autoRentals");
     }
 
     @Override

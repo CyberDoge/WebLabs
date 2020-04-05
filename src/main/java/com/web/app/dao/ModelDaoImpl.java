@@ -1,5 +1,6 @@
 package com.web.app.dao;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.MapType;
@@ -24,10 +25,14 @@ public abstract class ModelDaoImpl<T extends Model> implements ModelDao<T> {
     }
 
     @Override
-    public Document update(UUID id, String json) {
+    public Document update(UUID id, String json) throws JsonProcessingException {
         Document update = new Document();
-        Document setData = Document.parse(json);
-        update.append("$set", setData);
+        ObjectMapper mapper = new ObjectMapper();
+        T data = mapper.readValue(json, typeReference);
+        Document document = new Document(mapper.convertValue(data, new TypeReference<>() {
+        }));
+        document.values().removeAll(Collections.singleton(null));
+        update.append("$set", document);
         return this.getCollection().findOneAndUpdate(new BasicDBObject("_id", id.toString()), update);
     }
 
@@ -46,7 +51,7 @@ public abstract class ModelDaoImpl<T extends Model> implements ModelDao<T> {
     @Override
     public Optional<T> getModelById(UUID id) {
         final ObjectMapper mapper = new ObjectMapper();
-        MongoCursor<Document> cursor = this.getCollection().find(new BasicDBObject("_id", id.toString())).cursor();
+        MongoCursor<Document> cursor = this.getCollection().find(new BasicDBObject("_id", id)).cursor();
         if (cursor.hasNext()) {
             return Optional.of(mapper.convertValue(cursor.next(), typeReference));
         }
@@ -58,8 +63,7 @@ public abstract class ModelDaoImpl<T extends Model> implements ModelDao<T> {
         final ObjectMapper mapper = new ObjectMapper();
         TypeFactory typeFactory = mapper.getTypeFactory();
         MapType mapType = typeFactory.constructMapType(HashMap.class, String.class, Object.class);
-        getCollection().insertOne(new Document(mapper.convertValue(model, mapType)
-        ));
+        getCollection().insertOne(new Document(mapper.convertValue(model, mapType)));
     }
 
     @Override

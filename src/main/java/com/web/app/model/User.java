@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class User implements Model {
 
@@ -80,6 +81,7 @@ public class User implements Model {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", login='" + login + '\'' +
-                '}';
+                ", autoRentalIds=[" + autoRentalIds.stream().map(UUID::toString).collect(Collectors.joining(", ")) +
+                "]}";
     }
 }
