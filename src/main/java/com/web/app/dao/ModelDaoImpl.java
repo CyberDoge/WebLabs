@@ -33,7 +33,7 @@ public abstract class ModelDaoImpl<T extends Model> implements ModelDao<T> {
         }));
         document.values().removeAll(Collections.singleton(null));
         update.append("$set", document);
-        return this.getCollection().findOneAndUpdate(new BasicDBObject("_id", id.toString()), update);
+        return this.getCollection().findOneAndUpdate(new BasicDBObject("_id", id), update);
     }
 
     @Override

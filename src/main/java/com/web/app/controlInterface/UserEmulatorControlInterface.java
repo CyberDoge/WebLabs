@@ -9,7 +9,7 @@ public class UserEmulatorControlInterface implements ControlInterface {
 
     private int step = 0;
     private int jsonListIndex = 0;
-    private int operationNumber = 0;
+    private int operationNumber = 1;
 
     private List<UUID> uuidList;
     private List<String> userJsonList;
@@ -60,11 +60,11 @@ public class UserEmulatorControlInterface implements ControlInterface {
     public String getJsonObject() {
         switch (this.model) {
             case USER:
-                return userJsonList.get(jsonListIndex);
+                return userJsonList.get(jsonListIndex++);
             case AUTO:
-                return autoJsonList.get(jsonListIndex);
+                return autoJsonList.get(jsonListIndex++);
             case AUTO_RENTAL:
-                return autoRentalJsonList.get(jsonListIndex);
+                return autoRentalJsonList.get(jsonListIndex++);
             default:
                 return null;
         }
@@ -72,10 +72,10 @@ public class UserEmulatorControlInterface implements ControlInterface {
 
 
     private void reset() {
-        this.jsonListIndex = 0;
         if (this.operationNumber == 5) {
             ++this.step;
             this.operationNumber = 1;
+            this.jsonListIndex = 0;
         } else {
             ++this.operationNumber;
         }

@@ -68,7 +68,7 @@ public class User implements Model {
     }
 
     public String hashPassword(char[] password) {
-        return BCrypt.withDefaults().hashToString(16, password);
+        return BCrypt.withDefaults().hashToString(4, password);
     }
 
     public void setPassword(String password) {

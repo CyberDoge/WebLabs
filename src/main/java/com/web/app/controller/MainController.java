@@ -65,7 +65,7 @@ public class MainController {
         try {
             this.selectCurrentModel();
             int command = this.controlInterface.selectDbOperation();
-            executeAndPrintCommand(command);
+            executeCommand(command);
         } catch (NoModelWithSuchIdException e) {
             System.out.println(e.getMessage());
         } catch (Exception e) {
@@ -93,7 +93,7 @@ public class MainController {
         }
     }
 
-    private void executeAndPrintCommand(int command) throws IllegalArgumentException, JsonProcessingException, NoModelWithSuchIdException {
+    private void executeCommand(int command) throws IllegalArgumentException, JsonProcessingException, NoModelWithSuchIdException {
         switch (command) {
             case 1: {
                 UUID id = controlInterface.getId();
