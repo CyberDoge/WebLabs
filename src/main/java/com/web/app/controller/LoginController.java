@@ -2,7 +2,7 @@ package com.web.app.controller;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.web.app.dao.UserDao;
-import com.web.app.db_services.DBService;
+import com.web.app.dbServices.DBService;
 import com.web.app.model.User;
 
 import java.util.Optional;

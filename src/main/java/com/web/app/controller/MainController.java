@@ -11,7 +11,7 @@ import com.web.app.dao.AutoDao;
 import com.web.app.dao.AutoRentalDao;
 import com.web.app.dao.ModelDao;
 import com.web.app.dao.UserDao;
-import com.web.app.db_services.DBService;
+import com.web.app.dbServices.DBService;
 import com.web.app.model.Auto;
 import com.web.app.model.AutoRental;
 import com.web.app.model.Model;

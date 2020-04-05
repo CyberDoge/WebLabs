@@ -2,7 +2,7 @@ package com.web.app.main;
 
 import com.web.app.controller.LoginController;
 import com.web.app.controller.MainController;
-import com.web.app.db_services.DBService;
+import com.web.app.dbServices.DBService;
 
 public class Main {
     public static void main(final String[] args) {

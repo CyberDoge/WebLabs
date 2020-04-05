@@ -1,4 +1,4 @@
-package com.web.app.db_services;
+package com.web.app.dbServices;
 
 import com.github.cloudyrock.mongock.Mongock;
 import com.github.cloudyrock.mongock.MongockBuilder;
