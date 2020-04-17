@@ -19,25 +19,9 @@ jar {
 repositories {
     mavenCentral()
 }
-
 task explodedWar(type: Sync) {
     into "${buildDir}/exploded/web-3"
     with war
-}
-
-task deploy(dependsOn: explodedWar) {
-    exec {
-        commandLine('sh', '/opt/tomcat9/bin/catalina.sh', 'stop')
-        // кросплатформеннсоть - наше всё.
-        commandLine('rm', '-rf', '/opt/tomcat9/webapps/web-3')
-    }
-    copy {
-        from "build/exploded"
-        into "/opt/tomcat9/webapps"
-    }
-    exec {
-        commandLine('sh', '/opt/tomcat9/bin/catalina.sh', 'jpda', 'start')
-    }
 }
 
 dependencies {

@@ -5,9 +5,10 @@ import com.github.cloudyrock.mongock.MongockBuilder;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 
+import java.io.Closeable;
 import java.util.HashMap;
 
-public class DBService {
+public class DBService implements Closeable {
     public static final String MONGODB_URI = "mongodb://127.0.0.1:27017";
     public static final String DATABASE_NAME = "web";
     private HashMap<String, MongoClient> mongoClientsPool;
@@ -34,6 +35,12 @@ public class DBService {
                 .build();
         runner.execute();
         connection.close();
+    }
+
+    @Override
+    public void close() {
+        this.mongoClientsPool.values().forEach(MongoClient::close);
+        this.mongoClientsPool.clear();
     }
 }
 

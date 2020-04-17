@@ -15,6 +15,6 @@ public class Main {
         MainController mainController = new MainController(dbService, controlType);
         LoginController loginController = new LoginController(dbService);
         mainController.start();
-        System.out.println(loginController.authenticateUser("login1", "password1".toCharArray()));
+        System.out.println(loginController.authenticateUser("login2", "123123".toCharArray()));
     }
 }

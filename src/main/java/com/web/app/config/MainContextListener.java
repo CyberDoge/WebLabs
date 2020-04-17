@@ -1,5 +1,6 @@
 package com.web.app.config;
 
+import com.web.app.dbServices.DBService;
 import org.apache.catalina.filters.CorsFilter;
 
 import javax.servlet.DispatcherType;
@@ -20,9 +21,16 @@ public class MainContextListener implements ServletContextListener {
                 DispatcherType.REQUEST, DispatcherType.FORWARD);
         fr.addMappingForUrlPatterns(disps, false, "/*");
         fr.setInitParameter(CorsFilter.PARAM_CORS_ALLOWED_ORIGINS, "http://localhost:3000");
+
+        DBService dbService = new DBService();
+//        dbService.runChangeLog();
+
+        sce.getServletContext().setAttribute("dbService", dbService);
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
+        DBService dbService = (DBService) sce.getServletContext().getAttribute("dbService");
+        dbService.close();
     }
 }
