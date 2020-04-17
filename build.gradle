@@ -1,11 +1,12 @@
 plugins {
     id 'java'
+    id 'war'
 }
 
-version = '2.0'
+version = '3'
 
 group 'com.web.app'
-version '2.0'
+version '3'
 
 sourceCompatibility = 11
 targetCompatibility = 11
@@ -19,6 +20,26 @@ repositories {
     mavenCentral()
 }
 
+task explodedWar(type: Sync) {
+    into "${buildDir}/exploded/web-3"
+    with war
+}
+
+task deploy(dependsOn: explodedWar) {
+    exec {
+        commandLine('sh', '/opt/tomcat9/bin/catalina.sh', 'stop')
+        // кросплатформеннсоть - наше всё.
+        commandLine('rm', '-rf', '/opt/tomcat9/webapps/web-3')
+    }
+    copy {
+        from "build/exploded"
+        into "/opt/tomcat9/webapps"
+    }
+    exec {
+        commandLine('sh', '/opt/tomcat9/bin/catalina.sh', 'jpda', 'start')
+    }
+}
+
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile group: 'at.favre.lib', name: 'bcrypt', version: '0.9.0'
@@ -27,4 +48,5 @@ dependencies {
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.2'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.10.2'
     compile 'com.github.cloudyrock.mongock:mongock-core:3.2.4'
+    compile group: 'org.apache.tomcat.embed', name: 'tomcat-embed-core', version: '9.0.34'
 }
