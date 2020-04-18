@@ -10,6 +10,7 @@ import com.web.app.model.User;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,10 +38,21 @@ public class LoginServlet extends HttpServlet {
         userByLogin.filter(user ->
                 BCrypt.verifyer().verify(credentials.password.toCharArray(), user.getPasswordHash()).verified
         ).ifPresentOrElse(user -> {
-            req.getSession(true).setAttribute("currentUser", user);
+            req.getSession(true).setAttribute("currentUserId", user.getId());
+            resp.setHeader("Access-Control-Allow-Credentials", "true");
+            resp.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+            Cookie cookie = new Cookie("test", "foo");
+            cookie.setDomain("front.app.com");
+            resp.addCookie(cookie);
             resp.setStatus(200);
         }, () -> {
             resp.setStatus(403);
         });
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        this.userDao.close();
     }
 }

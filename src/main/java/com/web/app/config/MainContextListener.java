@@ -21,6 +21,7 @@ public class MainContextListener implements ServletContextListener {
                 DispatcherType.REQUEST, DispatcherType.FORWARD);
         fr.addMappingForUrlPatterns(disps, false, "/*");
         fr.setInitParameter(CorsFilter.PARAM_CORS_ALLOWED_ORIGINS, "http://localhost:3000");
+        fr.setInitParameter(CorsFilter.PARAM_CORS_SUPPORT_CREDENTIALS, "true");
 
         DBService dbService = new DBService();
 //        dbService.runChangeLog();
