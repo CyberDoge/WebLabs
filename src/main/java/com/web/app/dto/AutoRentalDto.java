@@ -5,7 +5,7 @@ import java.util.UUID;
 
 public class AutoRentalDto {
     public UUID id;
-    List<AutoDto> autos;
+    public List<AutoDto> autos;
 
     public static AutoRentalDto from(UUID id, List<AutoDto> autos) {
         var res = new AutoRentalDto();

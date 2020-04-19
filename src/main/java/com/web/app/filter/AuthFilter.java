@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 @WebFilter("/*")
-public class AutoFilter implements Filter {
+public class AuthFilter implements Filter {
 
     private static final List<Path> ALLOWED_PATH = List.of(Paths.get("/login"), Paths.get("/register"), Paths.get("/"));
 

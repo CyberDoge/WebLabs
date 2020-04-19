@@ -10,7 +10,6 @@ import com.web.app.model.User;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,7 +31,7 @@ public class LoginServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         UserCredentialsDto credentials = objectMapper.readValue(req.getReader(), UserCredentialsDto.class);
         Optional<User> userByLogin = this.userDao.getUserByLogin(credentials.login);
         userByLogin.filter(user ->
@@ -44,6 +43,11 @@ public class LoginServlet extends HttpServlet {
             resp.setStatus(200);
         }, () -> {
             resp.setStatus(403);
+            try {
+                resp.getWriter().println("No user with such login or password");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
     }
 

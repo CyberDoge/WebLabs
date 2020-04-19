@@ -7,6 +7,7 @@ import com.web.app.dao.UserDao;
 import com.web.app.dbServices.DBService;
 import com.web.app.dto.AutoDto;
 import com.web.app.dto.AutoRentalDto;
+import com.web.app.dto.UserDto;
 import com.web.app.model.User;
 
 import javax.servlet.ServletConfig;
@@ -42,32 +43,38 @@ public class UserServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         UUID currentUserId = (UUID) req.getSession(false).getAttribute("currentUserId");
-        PrintWriter writer = resp.getWriter();
 
+        if (Boolean.parseBoolean(req.getParameter("download"))) {
+            resp.setContentType("text/plain");
+            resp.setHeader("Content-disposition", "attachment; filename=result.json");
+        } else {
+            resp.setContentType("application/json");
+        }
+        PrintWriter writer = resp.getWriter();
         this.userDao.getModelById(currentUserId).ifPresentOrElse(user -> {
-            mapUser(writer, user);
+            try {
+                objectMapper.writeValue(writer, mapUser(user));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }, () -> resp.setStatus(404));
     }
 
-    private void mapUser(PrintWriter writer, User user) {
-        try {
-            List<AutoRentalDto> autoRentalList = new ArrayList<>();
-            user.getAutoRentalIds().forEach(uuid -> {
-                autoRentalDao.getModelById(uuid).ifPresent(autoRental -> {
-                            List<AutoDto> autoList = new ArrayList<>();
-                            autoRental.getAutos().forEach(
-                                    autoId -> autoDao.getModelById(autoId).ifPresent(
-                                            auto -> autoList.add(AutoDto.from(auto)
-                                            )
-                                    )
-                            );
-                            autoRentalList.add(AutoRentalDto.from(autoRental.getId(), autoList));
-                        }
-                );
-            });
-            objectMapper.writeValue(writer, from(user, autoRentalList));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private UserDto mapUser(User user) {
+        List<AutoRentalDto> autoRentalList = new ArrayList<>();
+        user.getAutoRentalIds().forEach(uuid -> {
+            autoRentalDao.getModelById(uuid).ifPresent(autoRental -> {
+                        List<AutoDto> autoList = new ArrayList<>();
+                        autoRental.getAutos().forEach(
+                                autoId -> autoDao.getModelById(autoId).ifPresent(
+                                        auto -> autoList.add(AutoDto.from(auto)
+                                        )
+                                )
+                        );
+                        autoRentalList.add(AutoRentalDto.from(autoRental.getId(), autoList));
+                    }
+            );
+        });
+        return from(user, autoRentalList);
     }
 }
