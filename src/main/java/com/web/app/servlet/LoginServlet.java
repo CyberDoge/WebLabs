@@ -41,9 +41,6 @@ public class LoginServlet extends HttpServlet {
             req.getSession(true).setAttribute("currentUserId", user.getId());
             resp.setHeader("Access-Control-Allow-Credentials", "true");
             resp.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
-            Cookie cookie = new Cookie("test", "foo");
-            cookie.setDomain("front.app.com");
-            resp.addCookie(cookie);
             resp.setStatus(200);
         }, () -> {
             resp.setStatus(403);
