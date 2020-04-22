@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>com.web.app.servlet.UserServlet</OriginalElement>
+  <nodes>
+    <node x="445.30220588235284" y="1045.0">com.web.app.servlet.LoginServlet</node>
+    <node x="1016.2375000000001" y="794.0">com.web.app.dao.AutoRentalDao</node>
+    <node x="104.625" y="736.0">com.web.app.dbServices.DBService</node>
+    <node x="1186.4610294117647" y="1021.0">com.web.app.servlet.UserServlet</node>
+    <node x="1801.7213235294118" y="748.0">com.web.app.dto.UserDto</node>
+    <node x="1058.2375000000002" y="0.0">com.web.app.dao.ModelDao</node>
+    <node x="81.625" y="421.0">com.web.app.dbServices.UsersChangeLog</node>
+    <node x="677.2375000000001" y="782.0">com.web.app.dao.UserDao</node>
+    <node x="1033.7375000000002" y="293.0">com.web.app.dao.ModelDaoImpl</node>
+    <node x="1730.2375000000002" y="423.0">com.web.app.dto.AutoRentalDto</node>
+    <node x="1743.206862745098" y="24.0">com.web.app.dto.AutoDto</node>
+    <node x="1390.2375000000002" y="794.0">com.web.app.dao.AutoDao</node>
+    <node x="0.0" y="1285.0">com.web.app.filter.AuthFilter</node>
+    <node x="0.0" y="1091.0">com.web.app.config.MainContextListener</node>
+    <node x="498.0" y="1285.0">com.web.app.filter.ErrorFilter</node>
+    <node x="479.625" y="794.0">com.web.app.dto.UserCredentialsDto</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="com.web.app.dao.AutoRentalDao" target="com.web.app.dao.ModelDaoImpl">
+      <point x="88.5" y="-39.5" />
+      <point x="1281.7375000000002" y="716.0" />
+      <point x="1219.8208333333334" y="716.0" />
+      <point x="26.583333333333258" y="191.5" />
+    </edge>
+    <edge source="com.web.app.dao.ModelDaoImpl" target="com.web.app.dao.ModelDao">
+      <point x="0.0" y="-191.5" />
+      <point x="0.0" y="121.5" />
+    </edge>
+    <edge source="com.web.app.dao.UserDao" target="com.web.app.dao.ModelDaoImpl">
+      <point x="79.75" y="-51.5" />
+      <point x="916.4875000000001" y="706.0" />
+      <point x="1113.4875000000002" y="706.0" />
+      <point x="-79.75" y="191.5" />
+    </edge>
+    <edge source="com.web.app.dao.AutoDao" target="com.web.app.dao.ModelDaoImpl">
+      <point x="-79.74999999999994" y="-39.5" />
+      <point x="1469.9875000000002" y="706.0" />
+      <point x="1272.9875000000002" y="706.0" />
+      <point x="79.75" y="191.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="0.5573383671543181" x="1049.5" y="692.0" />
+  <SelectedNodes>
+    <node>com.web.app.dbServices.UsersChangeLog</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Fields</Category>
+    <Category>Methods</Category>
+    <Category>Properties</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
