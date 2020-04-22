@@ -22,9 +22,11 @@ public class MainContextListener implements ServletContextListener {
         fr.addMappingForUrlPatterns(disps, false, "/*");
         fr.setInitParameter(CorsFilter.PARAM_CORS_ALLOWED_ORIGINS, "http://localhost:3000");
         fr.setInitParameter(CorsFilter.PARAM_CORS_SUPPORT_CREDENTIALS, "true");
+        fr.setInitParameter(CorsFilter.RESPONSE_HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
+        fr.setInitParameter(CorsFilter.RESPONSE_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, "http://localhost:3000");
 
         DBService dbService = new DBService();
-//        dbService.runChangeLog();
+        dbService.runChangeLog();
 
         sce.getServletContext().setAttribute("dbService", dbService);
     }

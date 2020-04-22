@@ -1,6 +1,7 @@
 package com.web.app.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.web.app.customExcpetion.NoSuchUserError;
 import com.web.app.dao.AutoDao;
 import com.web.app.dao.AutoRentalDao;
 import com.web.app.dao.UserDao;
@@ -16,10 +17,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.web.app.dto.UserDto.from;
 
@@ -50,31 +51,16 @@ public class UserServlet extends HttpServlet {
         } else {
             resp.setContentType("application/json");
         }
-        PrintWriter writer = resp.getWriter();
-        this.userDao.getModelById(currentUserId).ifPresentOrElse(user -> {
-            try {
-                objectMapper.writeValue(writer, mapUser(user));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }, () -> resp.setStatus(404));
+        User user = this.userDao.getModelById(currentUserId).orElseThrow(() -> new NoSuchUserError(HttpServletResponse.SC_NOT_FOUND));
+        objectMapper.writeValue(resp.getWriter(), mapUser(user));
     }
 
     private UserDto mapUser(User user) {
-        List<AutoRentalDto> autoRentalList = new ArrayList<>();
-        user.getAutoRentalIds().forEach(uuid -> {
-            autoRentalDao.getModelById(uuid).ifPresent(autoRental -> {
-                        List<AutoDto> autoList = new ArrayList<>();
-                        autoRental.getAutos().forEach(
-                                autoId -> autoDao.getModelById(autoId).ifPresent(
-                                        auto -> autoList.add(AutoDto.from(auto)
-                                        )
-                                )
-                        );
-                        autoRentalList.add(AutoRentalDto.from(autoRental.getId(), autoList));
-                    }
-            );
+        List<AutoRentalDto> autoRentalDtoList = new ArrayList<>();
+        autoRentalDao.getAllByIds(user.getAutoRentalIds()).forEach(autoRental -> {
+            List<AutoDto> autos = autoDao.getAllByIds(autoRental.getAutos()).stream().map(AutoDto::from).collect(Collectors.toList());
+            autoRentalDtoList.add(AutoRentalDto.from(autoRental.getId(), autos));
         });
-        return from(user, autoRentalList);
+        return from(user, autoRentalDtoList);
     }
 }

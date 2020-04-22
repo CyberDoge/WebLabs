@@ -2,6 +2,7 @@ package com.web.app.servlet;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.web.app.customExcpetion.NoSuchUserError;
 import com.web.app.dao.UserDao;
 import com.web.app.dbServices.DBService;
 import com.web.app.dto.UserCredentialsDto;
@@ -34,21 +35,11 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         UserCredentialsDto credentials = objectMapper.readValue(req.getReader(), UserCredentialsDto.class);
         Optional<User> userByLogin = this.userDao.getUserByLogin(credentials.login);
-        userByLogin.filter(user ->
-                BCrypt.verifyer().verify(credentials.password.toCharArray(), user.getPasswordHash()).verified
-        ).ifPresentOrElse(user -> {
-            req.getSession(true).setAttribute("currentUserId", user.getId());
-            resp.setHeader("Access-Control-Allow-Credentials", "true");
-            resp.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
-            resp.setStatus(200);
-        }, () -> {
-            resp.setStatus(403);
-            try {
-                resp.getWriter().println("No user with such login or password");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+        User user = userByLogin.filter(u ->
+                BCrypt.verifyer().verify(credentials.password.toCharArray(), u.getPasswordHash()).verified
+        ).orElseThrow(NoSuchUserError::new);
+        req.getSession(true).setAttribute("currentUserId", user.getId());
+        resp.setStatus(200);
     }
 
     @Override

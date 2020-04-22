@@ -16,10 +16,12 @@ import org.bson.Document;
 import java.util.*;
 
 public abstract class ModelDaoImpl<T extends Model> implements ModelDao<T> {
+    final ObjectMapper mapper;
     protected TypeReference<T> typeReference;
     private MongoClient mongoClient;
 
     public ModelDaoImpl(MongoClient mongoClient) {
+        mapper = new ObjectMapper();
         this.mongoClient = mongoClient;
         this.typeReference = this.createTypeReference();
     }
@@ -27,7 +29,6 @@ public abstract class ModelDaoImpl<T extends Model> implements ModelDao<T> {
     @Override
     public Document update(UUID id, String json) throws JsonProcessingException {
         Document update = new Document();
-        ObjectMapper mapper = new ObjectMapper();
         T data = mapper.readValue(json, typeReference);
         Document document = new Document(mapper.convertValue(data, new TypeReference<>() {
         }));
@@ -38,8 +39,6 @@ public abstract class ModelDaoImpl<T extends Model> implements ModelDao<T> {
 
     @Override
     public List<T> getAll() {
-        final ObjectMapper mapper = new ObjectMapper();
-
         MongoCursor<Document> cursor = getCollection().find().cursor();
         List<T> result = new ArrayList<>();
         while (cursor.hasNext()) {
@@ -50,7 +49,6 @@ public abstract class ModelDaoImpl<T extends Model> implements ModelDao<T> {
 
     @Override
     public Optional<T> getModelById(UUID id) {
-        final ObjectMapper mapper = new ObjectMapper();
         MongoCursor<Document> cursor = this.getCollection().find(new BasicDBObject("_id", id)).cursor();
         if (cursor.hasNext()) {
             return Optional.of(mapper.convertValue(cursor.next(), typeReference));
@@ -59,17 +57,25 @@ public abstract class ModelDaoImpl<T extends Model> implements ModelDao<T> {
     }
 
     @Override
+    public List<T> getAllByIds(List<UUID> uuidList) {
+        List<T> result = new ArrayList<>();
+        MongoCursor<Document> cursor = this.getCollection().find(new BasicDBObject("_id", new BasicDBObject("$in", uuidList))).cursor();
+        while (cursor.hasNext()) {
+            result.add(mapper.convertValue(cursor.next(), typeReference));
+        }
+        return result;
+    }
+
+    @Override
     public void insertModel(Model model) {
-        final ObjectMapper mapper = new ObjectMapper();
         TypeFactory typeFactory = mapper.getTypeFactory();
         MapType mapType = typeFactory.constructMapType(HashMap.class, String.class, Object.class);
         getCollection().insertOne(new Document(mapper.convertValue(model, mapType)));
     }
 
     @Override
-    public void deleteModelById(UUID id) {
-        DeleteResult result = getCollection().deleteOne(new BasicDBObject("_id", id));
-        System.out.println(result);
+    public DeleteResult deleteModelById(UUID id) {
+        return getCollection().deleteOne(new BasicDBObject("_id", id));
     }
 
     @Override
