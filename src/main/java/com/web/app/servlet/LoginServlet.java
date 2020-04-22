@@ -2,7 +2,7 @@ package com.web.app.servlet;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.web.app.customExcpetion.NoSuchUserError;
+import com.web.app.customExcpetion.NoSuchUserException;
 import com.web.app.dao.UserDao;
 import com.web.app.dbServices.DBService;
 import com.web.app.dto.UserCredentialsDto;
@@ -37,7 +37,7 @@ public class LoginServlet extends HttpServlet {
         Optional<User> userByLogin = this.userDao.getUserByLogin(credentials.login);
         User user = userByLogin.filter(u ->
                 BCrypt.verifyer().verify(credentials.password.toCharArray(), u.getPasswordHash()).verified
-        ).orElseThrow(NoSuchUserError::new);
+        ).orElseThrow(NoSuchUserException::new);
         req.getSession(true).setAttribute("currentUserId", user.getId());
         resp.setStatus(200);
     }

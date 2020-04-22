@@ -1,6 +1,6 @@
 package com.web.app.filter;
 
-import com.web.app.customExcpetion.NoSuchUserError;
+import com.web.app.customExcpetion.NoSuchUserException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -23,8 +23,9 @@ public class ErrorFilter extends HttpFilter {
     protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         try {
             super.doFilter(request, response, chain);
-        } catch (NoSuchUserError e) {
-            response.sendError(e.getStatusCode(), e.getErrorMessage());
+        } catch (NoSuchUserException e) {
+            response.getWriter().println(e.getErrorMessage());
+            response.setStatus(e.getStatusCode());
         }
     }
 }

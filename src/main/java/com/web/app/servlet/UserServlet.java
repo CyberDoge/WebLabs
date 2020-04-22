@@ -1,7 +1,7 @@
 package com.web.app.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.web.app.customExcpetion.NoSuchUserError;
+import com.web.app.customExcpetion.NoSuchUserException;
 import com.web.app.dao.AutoDao;
 import com.web.app.dao.AutoRentalDao;
 import com.web.app.dao.UserDao;
@@ -51,7 +51,7 @@ public class UserServlet extends HttpServlet {
         } else {
             resp.setContentType("application/json");
         }
-        User user = this.userDao.getModelById(currentUserId).orElseThrow(() -> new NoSuchUserError(HttpServletResponse.SC_NOT_FOUND));
+        User user = this.userDao.getModelById(currentUserId).orElseThrow(() -> new NoSuchUserException(HttpServletResponse.SC_NOT_FOUND));
         objectMapper.writeValue(resp.getWriter(), mapUser(user));
     }
 
