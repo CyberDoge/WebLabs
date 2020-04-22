@@ -4,6 +4,9 @@ import com.web.app.model.Auto;
 
 import java.util.UUID;
 
+/**
+ * Data transfer object. Объект для передачи только нужных полей и значений http ответа в виде JSON.
+ */
 public class AutoDto {
     public UUID id;
     public String model;

@@ -6,6 +6,10 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Модель для базы данных
+ */
+
 public class Auto implements Serializable, Model {
     @JsonProperty("_id")
     private UUID id;

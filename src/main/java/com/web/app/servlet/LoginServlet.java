@@ -17,11 +17,18 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
+/**
+ * Http servlet для аутентификации пользователя.
+ */
+
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
     private UserDao userDao;
     private ObjectMapper objectMapper;
 
+    /**
+     * Получает объект {@link DBService} из контекста сервлетов и создает объект для запросов в таблицу с пользователями
+     */
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);

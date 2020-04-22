@@ -8,6 +8,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Модель для базы данных
+ */
+
 public class AutoRental implements Model {
     @JsonProperty("_id")
     private UUID id;

@@ -15,6 +15,10 @@ import java.util.stream.Collectors;
 
 import static com.web.app.utils.ModelsUtils.*;
 
+/**
+ * Контроль миграции бд. Сохраняет изменения структры базы данных, при условии что структура будет меняться
+ * через changelog-и
+ */
 @ChangeLog
 public class UsersChangeLog {
 

@@ -12,6 +12,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+/**
+ * Http фильтр, проверяющий есть ли у пользователя сессия, в которой он залогинен.
+ * Делает редирект если сессии нет, либо пропускает если она есть.
+ */
+
 @WebFilter("/*")
 public class AuthFilter extends HttpFilter {
 

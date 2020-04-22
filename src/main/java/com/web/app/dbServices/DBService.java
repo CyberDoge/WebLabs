@@ -8,6 +8,9 @@ import com.mongodb.MongoClientURI;
 import java.io.Closeable;
 import java.util.HashMap;
 
+/**
+ * Класс, управляющий подключением к базе данных.
+ */
 public class DBService implements Closeable {
     public static final String MONGODB_URI = "mongodb://127.0.0.1:27017";
     public static final String DATABASE_NAME = "web";

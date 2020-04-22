@@ -15,6 +15,11 @@ import org.bson.Document;
 
 import java.util.*;
 
+/**
+ * Реализация класса, который управляет запросами к базе данных.
+ *
+ * @param <T>
+ */
 public abstract class ModelDaoImpl<T extends Model> implements ModelDao<T> {
     final ObjectMapper mapper;
     protected TypeReference<T> typeReference;

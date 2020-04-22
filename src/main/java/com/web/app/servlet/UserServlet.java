@@ -24,6 +24,9 @@ import java.util.stream.Collectors;
 
 import static com.web.app.dto.UserDto.from;
 
+/**
+ * Http servlet для получение информации о пользователях.
+ */
 @WebServlet("/current-user")
 public class UserServlet extends HttpServlet {
 
@@ -32,6 +35,9 @@ public class UserServlet extends HttpServlet {
     private AutoRentalDao autoRentalDao;
     private AutoDao autoDao;
 
+    /**
+     * Получает объект {@link DBService} из контекста сервлетов и создает объект для запросов в таблицу с пользователями, машинами и арендой
+     */
     @Override
     public void init(ServletConfig config) {
         DBService dbService = (DBService) config.getServletContext().getAttribute("dbService");
@@ -41,6 +47,9 @@ public class UserServlet extends HttpServlet {
         objectMapper = new ObjectMapper();
     }
 
+    /**
+     * Проверяет url параметр, на запрос того что требуется файл и добавляет нужные заголовки.
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         UUID currentUserId = (UUID) req.getSession(false).getAttribute("currentUserId");
@@ -55,6 +64,10 @@ public class UserServlet extends HttpServlet {
         objectMapper.writeValue(resp.getWriter(), mapUser(user));
     }
 
+    /**
+     * Генерирует DTO объект для отправки ответа от сервера.
+     * (Что бы не отправлять объект из бд с лишней информацией, например хеш пароля)
+     */
     private UserDto mapUser(User user) {
         List<AutoRentalDto> autoRentalDtoList = new ArrayList<>();
         autoRentalDao.getAllByIds(user.getAutoRentalIds()).forEach(autoRental -> {

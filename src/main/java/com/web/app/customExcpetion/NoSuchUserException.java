@@ -2,6 +2,9 @@ package com.web.app.customExcpetion;
 
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * Исключение для более удобного управления ответами сервера
+ */
 public class NoSuchUserException extends RuntimeException {
     private final String errorMessage;
     private int statusCode;

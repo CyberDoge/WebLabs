@@ -10,6 +10,10 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 import java.util.EnumSet;
 
+/**
+ * Класс с настройками контекста веб приложения
+ * Добавление CORS заголовков и объекта {@link DBService} в контекст сервлетов
+ */
 @WebListener
 public class MainContextListener implements ServletContextListener {
 
